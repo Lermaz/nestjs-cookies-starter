@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { hostname } from 'os';
+import * as packageJson from '../package.json';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -15,8 +17,14 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('Should return json object of project info', () => {
+      expect(appController.getHealthCheck()).toStrictEqual({
+        status: 1,
+        service_name: packageJson.name,
+        version: packageJson.version,
+        message: 'Health check OK',
+        hostname: hostname,
+      });
     });
   });
 });

@@ -6,10 +6,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigsModule } from './auth/common/configs/configs.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    UsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -20,10 +20,11 @@ import { ConfigsModule } from './auth/common/configs/configs.module';
       },
       inject: [ConfigService],
     }),
-    // AuthModule,
+    UsersModule,
+    AuthModule,
     ConfigsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtService],
 })
 export class AppModule {}

@@ -32,7 +32,7 @@ export class UsersService {
         Logger.log('User Created');
         resolve(user);
       } catch (error) {
-        Logger.error('userService/getOne', error);
+        Logger.error('userService/create', error);
         reject(error);
       }
     });
@@ -45,7 +45,7 @@ export class UsersService {
         resolve(users);
       } catch (error) {
         reject(error);
-        Logger.error('userService/getAll', error);
+        Logger.error('userService/findAll', error);
       }
     });
   }
@@ -60,7 +60,22 @@ export class UsersService {
         resolve(user);
       } catch (error) {
         reject(error);
-        Logger.error('userService/getOne', error);
+        Logger.error('userService/findOne', error);
+      }
+    });
+  }
+
+  async findOneByEmail(email: string): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await this.userModel.findOne({
+          email: email,
+        });
+        Logger.log('User found');
+        resolve(user);
+      } catch (error) {
+        reject(error);
+        Logger.error('userService/findOneByEmail', error);
       }
     });
   }
@@ -73,7 +88,7 @@ export class UsersService {
         resolve(user);
       } catch (error) {
         reject(error);
-        Logger.error('userService/updateUser', error);
+        Logger.error('userService/update', error);
       }
     });
   }
@@ -86,7 +101,7 @@ export class UsersService {
         resolve(user);
       } catch (error) {
         reject(error);
-        Logger.error('userService/deleteOne', error);
+        Logger.error('userService/remove', error);
       }
     });
   }

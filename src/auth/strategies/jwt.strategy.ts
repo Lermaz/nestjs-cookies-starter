@@ -12,13 +12,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET_KEY,
+      secretOrKey: process.env.JWT_ACCESS_SECRET,
     });
   }
 
   private static extractJWT(req: Request): string | null {
     if (req.cookies && 'token' in req.cookies) {
-      return req.cookies.token;
+      return req.cookies.token.accessToken;
     }
     return null;
   }

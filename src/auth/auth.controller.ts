@@ -12,12 +12,15 @@ import { IToken, Token } from './interfaces/token.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Res } from '@nestjs/common';
 import { Response } from 'express';
+import { UseGuards } from '@nestjs/common';
+import { LocalAuthGuard } from './guard/local-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOkResponse({ type: Token })
   async login(

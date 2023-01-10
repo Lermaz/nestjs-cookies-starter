@@ -6,6 +6,7 @@ import { IToken } from './interfaces/token.interface';
 import { Logger } from '@nestjs/common';
 import { PasswordService } from './password.service';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,16 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly userService: UsersService,
   ) {}
+
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user && bcrypt.compareSync(password, user.password)) {
+      return user;
+    }
+
+    return null;
+  }
 
   async login(loginDto: LoginDto, res: Response) {
     try {
@@ -28,7 +39,9 @@ export class AuthService {
         userId: user.id,
       });
 
-      res.cookie('auth-cookie', tokens, { httpOnly: true });
+      res.cookie('token', tokens, {
+        httpOnly: true,
+      });
       return { user, tokens };
     } catch (error) {
       Logger.error('login', error);
