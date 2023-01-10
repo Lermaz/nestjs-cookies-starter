@@ -7,13 +7,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { IToken, Token } from './interfaces/token.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guard/local-auth.guard';
+import { Delete } from '@nestjs/common';
+import { Req } from '@nestjs/common';
+import { Param } from '@nestjs/common';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -22,7 +23,6 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiOkResponse({ type: Token })
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -36,11 +36,28 @@ export class AuthController {
   }
 
   @Post('refreshToken')
-  @ApiOkResponse({ type: Token })
-  async refreshToken(@Body() { token }: RefreshTokenDto): Promise<IToken> {
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
     try {
-      const response = await this.authService.refreshToken(token);
+      await this.authService.refreshToken(req.cookies.token, res);
+      return 'Token Refreshed';
+    } catch (error) {
+      Logger.error('refresh', error);
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Delete('logout/:id')
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Param('id') id: string,
+  ) {
+    try {
+      const response = await this.authService.logout(id, res);
       return response;
-    } catch (error) {}
+    } catch (error) {
+      Logger.error('logout', error);
+      throw new BadRequestException(error);
+    }
   }
 }
